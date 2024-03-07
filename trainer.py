@@ -3,9 +3,10 @@ import torch.nn as nn
 import torch.optim as optim
 import random
 import numpy as np
-from helper import plot
+from helper import plot, file_save
 from agent import Agent
 from game import SnakeGameAI
+from datetime import datetime
 
 MAX_MEMORY = 100_000
 BATCH_SIZE = 1000
@@ -62,40 +63,56 @@ class QTrainer:
             plot_mean_scores = []
             total_score = 0
             record = 0
-            while True:
-                # get old state
-                state_old = self.agent.get_state(self.env)
 
-                # get move
-                final_move = self.agent.get_action(state_old)
+            try:
+                while True:
+                    # get old state
+                    state_old = self.agent.get_state(self.env)
 
-                # perform move and get new state
-                reward, done, score = self.env.play_step(final_move)
-                state_new = self.agent.get_state(self.env)
+                    # get move
+                    final_move = self.agent.get_action(state_old)
 
-                # train short memory
-                self.train_short_memory(state_old, final_move, reward, state_new, done)
+                    # perform move and get new state
+                    reward, done, score, program_end = self.env.play_step(final_move)
+                    state_new = self.agent.get_state(self.env)
 
-                # remember
-                self.agent.remember(state_old, final_move, reward, state_new, done)
+                    # train short memory
+                    self.train_short_memory(state_old, final_move, reward, state_new, done)
 
-                if done:
-                    # train long memory, plot result
-                    self.env.reset()
-                    self.agent.n_games += 1
-                    self.train_long_memory()
+                    # remember
+                    self.agent.remember(state_old, final_move, reward, state_new, done)
 
-                    if score > record:
-                        record = score
-                        self.agent.model.save()
+                    if program_end:
+                        raise Exception
 
-                    print('Game', self.agent.n_games, 'Score', score, 'Record:', record)
+                    if done:
+                        # train long memory, plot result
+                        self.env.reset()
+                        self.agent.n_games += 1
+                        self.train_long_memory()
 
-                    plot_scores.append(score)
-                    total_score += score
-                    mean_score = total_score / self.agent.n_games
-                    plot_mean_scores.append(mean_score)
-                    plot(plot_scores, plot_mean_scores)
+                        if score > record:
+                            record = score
+                            self.agent.model.save()
+
+                        print('Game', self.agent.n_games, 'Score', score, 'Record:', record)
+
+                        plot_scores.append(score)
+                        total_score += score
+                        mean_score = total_score / self.agent.n_games
+                        plot_mean_scores.append(mean_score)
+                        plot(plot_scores, plot_mean_scores)
+
+            except KeyboardInterrupt:
+                print("Exit by KeyBoard Interrupt. Program Ended")
+                file_save(datetime.now(), plot_scores, plot_mean_scores)
+                quit()
+
+            except Exception as e:
+                print("Program Ended")
+                file_save(datetime.now(), plot_scores, plot_mean_scores)
+                quit()
+
 
 
         def train_long_memory(self):

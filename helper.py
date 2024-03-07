@@ -20,3 +20,18 @@ def plot(scores, mean_scores):
     plt.text(len(mean_scores)-1, mean_scores[-1], str(mean_scores[-1]))
     plt.show(block=False)
     plt.pause(.1)
+
+
+
+def file_save(operation_date, scores, mean_scores):
+
+    with open('snake-RL-results.txt','a') as file:
+        file.write("Operation Date: " + str(operation_date) + "\n")
+        file.write("Number of Games: " + str(len(scores)) + "\n")
+        file.write("Highest Score: " + str(max(scores)) + "\n")
+        file.write("Scores: " + str(scores) + "\n")
+        file.write("Mean Score: " + str(mean_scores) + "\n")
+
+        file.write("\n\n")
+
+

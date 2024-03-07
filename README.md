@@ -8,9 +8,9 @@ Sample Self-Learning Snake Game by using Reinforcement Learning method with PyTo
 
 <br>
 
-## What I have to do 
+## Things to do 
 
-* Implement saving training data
+* Start learning from saved data
 
 * Conduct experiments to test various learning methods
 
