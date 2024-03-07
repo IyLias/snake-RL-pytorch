@@ -12,6 +12,13 @@ Sample Self-Learning Snake Game by using Reinforcement Learning method with PyTo
 
 * Start learning from saved data
 
+* Set epsilon-greedy method more elaborately(Agent should explore even after learned a lot)
+
 * Conduct experiments to test various learning methods
 
 
+## Questions
+
+* Changing reward values affects learning? 
+
+* How to accelerate learning in the early stages?
